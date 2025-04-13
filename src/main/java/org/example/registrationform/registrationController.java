@@ -8,7 +8,6 @@ public class registrationController {
 
     @FXML
     protected void onHelloButtonClick() {
-        System.out.println("hello wordl, this is in the remote!");
         
     }
 }
