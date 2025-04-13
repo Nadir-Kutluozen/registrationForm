@@ -6,6 +6,6 @@ public class registrationController {
 
     @FXML
     protected void onHelloButtonClick() {
-        ;
+        
     }
 }
