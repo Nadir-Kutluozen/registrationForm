@@ -2,8 +2,14 @@ package org.example.registrationform;
 
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
+import javafx.fxml.FXMLLoader;
+import javafx.scene.Parent;
+import javafx.scene.Scene;
 import javafx.scene.control.Button;
 import javafx.scene.control.TextField;
+import javafx.stage.Stage;
+
+import java.io.IOException;
 
 public class registrationController {
 
@@ -16,7 +22,6 @@ public class registrationController {
     private Button addBtn;
 
     /* Regex patterns for validations*/
-
     //min 2 max 25 {2,25}, this makes sure we have every character [A-Za-z]
     private final String nameRegex = "^([A-Za-z]{2,25})\\s+([A-Za-z]{2,25})$";
 
@@ -29,27 +34,73 @@ public class registrationController {
     // 5-digit Zip Code.
     private final String zipRegex = "^\\d{5}$";
 
-    //todo
-    //First Name and Last Name: Minimum of 2 characters and maximum of 25 characters.
-    //Date of Birth: Should be in MM/DD/YYYY format.
-    //Email: Should accept only the Farmingdale valid email addresses.
-    //Zip Code: Should be 5-digit numbers.
-
-    //todo
-    //Enable the "Add" button only if all fields contain valid data.
-    //Otherwise it should remain disabled (grayed out).
-    //if every entry is valid then, enable.
-
-
+    /**
+     * initialize() disables the btn first, then add all the
+     * FocusListener to the textfields.
+     */
     @FXML
     public void initialize() {
         addBtn.setDisable(true); // first disabled, later if all true, enable!
 
+        addFocusListener(firstAndLastName, nameRegex);
+        addFocusListener(dateOfBrith, dobRegex);
+        addFocusListener(email, emailRegex);
+        addFocusListener(zipCode, zipRegex);
+
     }
 
-    @FXML
-    void add(ActionEvent event) {
+    /**
+     * addFocusListener - add listener so that when we lose focus,
+     * we can indicate that there is an error occurred.
+     * @param field the selected TextField
+     * @param regex regex pattern
+     */
+    private void addFocusListener(TextField field, String regex) {
+        field.focusedProperty().addListener((observable, oldValue, newValue) -> {
+            if (!newValue) { // When the field loses focus.
+                if (!field.getText().matches(regex)) {
+                    field.setStyle("-fx-background-color: #ffcccc;");
+                } else {
+                    // Clear the error style if the input is valid.
+                    field.setStyle(null);
+                }
+                // After each validation
+                validateForm();
+            }
+        });
+    }
 
+    /**
+     * validateForm - checks all the patterns and if true, enable the add btn.
+     */
+    private void validateForm() {
+        boolean namesValid = firstAndLastName.getText().matches(nameRegex);
+        boolean dobValid = dateOfBrith.getText().matches(dobRegex);
+        boolean emailValid = email.getText().matches(emailRegex);
+        boolean zipValid = zipCode.getText().matches(zipRegex);
+
+        // Enable the Add button if everything is true!
+        addBtn.setDisable(!(namesValid && dobValid && emailValid && zipValid));
+    }
+    /**
+     * Handles the Add button action.
+     *
+     * @param event The ActionEvent
+     * @throws IOException if the FXML file is not loading.
+     */
+    @FXML
+    void add(ActionEvent event) throws IOException {
+        // Load the new FXML file.
+        FXMLLoader loader = new FXMLLoader(getClass().getResource("/org/example/registrationForm/screen-view.fxml"));
+        Parent root = loader.load();
+        ScreenView screenViewController = loader.getController();
+        // Pass the name entered (or any variable you want) to the controller.
+        screenViewController.setUserName(firstAndLastName.getText());
+
+        Scene newScene = new Scene(root);
+        Stage currentStage = (Stage) addBtn.getScene().getWindow();
+        currentStage.setScene(newScene);
+        currentStage.setTitle("new page!");
     }
 
 }
