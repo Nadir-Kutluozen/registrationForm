@@ -94,8 +94,11 @@ public class registrationController {
         FXMLLoader loader = new FXMLLoader(getClass().getResource("/org/example/registrationForm/screen-view.fxml"));
         Parent root = loader.load();
         ScreenView screenViewController = loader.getController();
-        // Pass the name entered (or any variable you want) to the controller.
+
         screenViewController.setUserName(firstAndLastName.getText());
+        screenViewController.setEmail(email.getText());
+        screenViewController.setDate(dateOfBrith.getText());
+        screenViewController.setZipCode(zipCode.getText());
 
         Scene newScene = new Scene(root);
         Stage currentStage = (Stage) addBtn.getScene().getWindow();
